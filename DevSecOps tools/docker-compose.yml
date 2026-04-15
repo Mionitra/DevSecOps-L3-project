@@ -1,5 +1,4 @@
 services:
-
   bandit:
     build: ./bandit
     volumes:
@@ -28,8 +27,9 @@ services:
   dependency-check:
     image: owasp/dependency-check
     volumes:
-      - ./:/src
+      - .:/src
       - ./security-reports:/report
+      - dependency_check_data:/usr/share/dependency-check/data
     command: --scan /src --format JSON --out /report
 
   cosign:
@@ -37,3 +37,5 @@ services:
     volumes:
       - ./:/app
     entrypoint: ["cosign"]
+volumes:
+  dependency_check_data:

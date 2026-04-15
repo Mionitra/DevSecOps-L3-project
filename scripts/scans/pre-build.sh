@@ -11,19 +11,19 @@ echo "Reports: $REPORTS_DIR"
 
 # Bandit
 echo "▶ Running Bandit..."
-docker compose -f docker-dependencies/docker-compose.yml run --rm \
+docker compose -f "DevSecOps tools/docker-compose.yml" run --rm \
   -v "${PROJECT_DIR}:/app" \
   bandit -r /app -f json -o /app/security-reports/pre-build/bandit.json || true
 
 # Semgrep
 echo "▶ Running Semgrep..."
-docker compose -f docker-dependencies/docker-compose.yml run --rm \
+docker compose -f "DevSecOps tools/docker-compose.yml" run --rm \
   -v "${PROJECT_DIR}:/app" \
   semgrep scan --config auto --json --output /app/security-reports/pre-build/semgrep.json /app || true
 
 # Gitleaks
 echo "▶ Running Gitleaks..."
-docker compose -f docker-dependencies/docker-compose.yml run --rm \
+docker compose -f "DevSecOps tools/docker-compose.yml" run --rm \
   -v "${PROJECT_DIR}:/app" \
   gitleaks detect --source /app --report-format json \
   --report-path /app/security-reports/pre-build/gitleaks.json || true
