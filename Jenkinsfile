@@ -36,7 +36,6 @@ pipeline {
             steps {
                 echo 'Scanning image (Trivy, Dependency-Check)...'
                 sh 'chmod +x scripts/scans/build-scan.sh'
-                env.DOCKER_IMAGE = "${DOCKER_IMAGE}"
                 sh './scripts/scans/build-scan.sh'
             }
         }
@@ -45,8 +44,6 @@ pipeline {
             steps {
                 echo 'Signing image with Cosign...'
                 sh 'chmod +x scripts/security/sign.sh'
-                env.IMAGE_NAME = "${IMAGE_NAME}"
-                env.IMAGE_TAG = "${IMAGE_TAG}"
                 sh './scripts/security/sign.sh'
             }
         }
@@ -65,8 +62,6 @@ pipeline {
                 script {
                     echo 'Verifying signature before deployment...'
                     sh 'chmod +x scripts/security/verify.sh'
-                    env.IMAGE_NAME = "${IMAGE_NAME}"
-                    env.IMAGE_TAG = "${IMAGE_TAG}"
                     sh './scripts/security/verify.sh'
 
                     echo 'Deploying application...'
