@@ -7,6 +7,7 @@ pipeline {
         REGISTRY     = "ghcr.io/Mionitra"
         FULL_IMAGE   = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
         DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
+        DOCKERHUB    = credentials('dockerhub-credentials')
     }
 
     stages {
@@ -33,13 +34,7 @@ pipeline {
         }
         stage('Docker Login') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKERHUB_USR',
-                    passwordVariable: 'DOCKERHUB_PSW'
-                )]) {
-                    sh 'echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin'
-                }
+                sh 'echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin'
             }
         }
 
