@@ -11,12 +11,6 @@ pipeline {
     }
 
     stages {
-        stage('Login to Docker Hub') {
-            steps {
-                echo 'Logging into Docker Hub...'
-                sh "echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin"
-            }
-        }
         stage('Code') {
             steps {
                 echo 'Checking out code...'
@@ -38,10 +32,9 @@ pipeline {
                 sh "docker build -t ${DOCKER_IMAGE} -f docker/Dockerfile ."
             }
         }
-
-        stage('Debug NVD API Key') {
+        stage('Docker Login') {
             steps {
-                sh 'echo "NVD key length: ${#NVD_API_KEY}"'  // prints length, not the value
+                sh 'echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin'
             }
         }
 

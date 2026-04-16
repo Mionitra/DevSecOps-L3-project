@@ -1,7 +1,3 @@
-FROM python:3.9-slim
-
-RUN pip install --no-cache-dir pip-audit
-
-WORKDIR /app
-
+FROM python:3.12-slim
+RUN pip install pip-audit
 ENTRYPOINT ["pip-audit"]

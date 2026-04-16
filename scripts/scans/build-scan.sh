@@ -3,31 +3,40 @@ set -e
 
 PROJECT_DIR=$(pwd)
 COMPOSE_FILE="${PROJECT_DIR}/DevSecOps-tools/docker-compose.yml"
-REPORTS_DIR="${PROJECT_DIR}/DevSecOps-tools/security-reports/build"
+TOOLS_DIR="${PROJECT_DIR}/DevSecOps-tools"
 
-mkdir -p "$REPORTS_DIR"
+mkdir -p "${TOOLS_DIR}/security-reports/build"
 
 echo "🔍 Running BUILD scans..."
 echo "Image: ${DOCKER_IMAGE}"
 
-# Trivy - scan the built Docker image
+# Login to Docker Hub so trivy can pull its DB
+echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin
+
+# Update Trivy DB only if cache is older than 24h
+echo "▶ Updating Trivy DB if needed..."
+docker compose -f "$COMPOSE_FILE" run --rm \
+  -e TRIVY_DB_REPOSITORY=aquasec/trivy-db \
+  trivy-db-updater || true
+
+# Trivy image scan - skips re-downloading DB
 echo "▶ Running Trivy..."
 docker compose -f "$COMPOSE_FILE" run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
+  -e TRIVY_DB_REPOSITORY=aquasec/trivy-db \
   trivy image \
+  --skip-db-update \
   --format json \
   --output /app/security-reports/build/trivy.json \
-  --db-repository docker.io/aquasec/trivy-db \
   "${DOCKER_IMAGE}" || true
 echo "✅ Trivy done"
 
-# pip-audit - replacement for OWASP Dependency-Check
+# pip-audit - fast Python dependency scan, no NVD download needed
 echo "▶ Running pip-audit..."
-docker compose -f "$COMPOSE_FILE" run --rm  \
-  pip-audit \
-  -r /app/requirements.txt \
-  --format json \
-  --output /app/security-reports/build/pip-audit.json || true   
+docker compose -f "$COMPOSE_FILE" run --rm pip-audit \
+  -r /app/src/requirements.txt \
+  -f json \
+  -o /app/security-reports/build/pip-audit.json || true
 echo "✅ pip-audit done"
 
-echo "✅ BUILD scans complete. Reports in $REPORTS_DIR"
+echo "✅ BUILD scans complete."
