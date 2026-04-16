@@ -2,11 +2,13 @@
 set -e
 
 PROJECT_DIR=$(pwd)
+COMPOSE_FILE="${PROJECT_DIR}/DevSecOps-tools/docker-compose.yml"
 
-echo "🔎 Verifying signature: ${IMAGE_NAME}:${IMAGE_TAG}"
+echo "🔎 Verifying: ${IMAGE_NAME}:${IMAGE_TAG}"
 
-docker compose -f "DevSecOps tools/docker-compose.yml" run --rm \
-  -v "${PROJECT_DIR}:/app" \
-  cosign verify --key /app/cosign.pub "${IMAGE_NAME}:${IMAGE_TAG}"
+docker compose -f "$COMPOSE_FILE" run --rm \
+  cosign verify \
+  --key /app/cosign.pub \
+  "${IMAGE_NAME}:${IMAGE_TAG}"
 
 echo "✅ Signature verified."

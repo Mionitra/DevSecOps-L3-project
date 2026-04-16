@@ -2,12 +2,13 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "devops-app"
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
-        REGISTRY = "ghcr.io/Mionitra"
-        FULL_IMAGE = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-        DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
-    }
+    IMAGE_NAME   = "devops-app"
+    IMAGE_TAG    = "${env.BUILD_NUMBER}"
+    REGISTRY     = "ghcr.io/Mionitra"
+    FULL_IMAGE   = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+    DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
+    NVD_API_KEY  = credentials('nvd-api-key')   
+}
 
     stages {
         stage('Code') {

@@ -1,0 +1,40 @@
+# DevSecOps-tools/docker-compose.yml
+services:
+
+  bandit:
+    build: ./bandit
+    volumes:
+      - ./:/app
+
+  semgrep:
+    build: ./semgrep
+    volumes:
+      - ./:/app
+
+  gitleaks:
+    build: ./gitleaks
+    volumes:
+      - ./:/app
+
+  trivy:
+    image: aquasec/trivy:latest
+    volumes:
+      - ./:/app
+      - trivy-cache:/root/.cache/trivy  
+
+  dependency-check:
+    image: owasp/dependency-check
+    volumes:
+      - ./:/src
+      - ./security-reports:/report
+      - dependency-check-data:/usr/share/dependency-check/data  
+
+  cosign:
+    build: ./cosign
+    volumes:
+      - ./:/app
+    entrypoint: ["cosign"]
+
+volumes:
+  trivy-cache:
+  dependency-check-data:
