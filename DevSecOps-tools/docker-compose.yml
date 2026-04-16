@@ -22,12 +22,10 @@ services:
       - ./:/app
       - trivy-cache:/root/.cache/trivy  
 
-  dependency-check:
-    image: owasp/dependency-check
+  pip-audit:
+    build: ./pip-audit
     volumes:
-      - ./:/src
-      - ./security-reports:/report
-      - dependency-check-data:/usr/share/dependency-check/data  
+      - ./:/app
 
   cosign:
     build: ./cosign

@@ -10,25 +10,24 @@ mkdir -p "$REPORTS_DIR"
 echo "🔍 Running BUILD scans..."
 echo "Image: ${DOCKER_IMAGE}"
 
-# Trivy - scan the built Docker image (not filesystem)
+# Trivy - scan the built Docker image
 echo "▶ Running Trivy..."
 docker compose -f "$COMPOSE_FILE" run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   trivy image \
   --format json \
   --output /app/security-reports/build/trivy.json \
+  --db-repository docker.io/aquasec/trivy-db \
   "${DOCKER_IMAGE}" || true
 echo "✅ Trivy done"
 
-# OWASP Dependency-Check - NVD cache persisted via named volume
-echo "▶ Running OWASP Dependency-Check..."
+# pip-audit - replacement for OWASP Dependency-Check
+echo "▶ Running pip-audit..."
 docker compose -f "$COMPOSE_FILE" run --rm  \
-  -e NVD_API_KEY="${NVD_API_KEY}" \
-  dependency-check \
-  --scan /src \
-  --format JSON \
-  --out /report/build \
-  --nvdApiKey "${NVD_API_KEY}" || true   
-echo "✅ Dependency-Check done"
+  pip-audit \
+  -r /app/requirements.txt \
+  --format json \
+  --output /app/security-reports/build/pip-audit.json || true   
+echo "✅ pip-audit done"
 
 echo "✅ BUILD scans complete. Reports in $REPORTS_DIR"

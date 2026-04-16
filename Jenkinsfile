@@ -2,15 +2,21 @@ pipeline {
     agent any
 
     environment {
-    IMAGE_NAME   = "devops-app"
-    IMAGE_TAG    = "${env.BUILD_NUMBER}"
-    REGISTRY     = "ghcr.io/Mionitra"
-    FULL_IMAGE   = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-    DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
-    NVD_API_KEY  = credentials('nvd-api-key')   
-}
+        IMAGE_NAME   = "devops-app"
+        IMAGE_TAG    = "${env.BUILD_NUMBER}"
+        REGISTRY     = "ghcr.io/Mionitra"
+        FULL_IMAGE   = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+        DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
+        DOCKERHUB    = credentials('DockerHub Credentials')
+    }
 
     stages {
+        stage('Login to Docker Hub') {
+            steps {
+                echo 'Logging into Docker Hub...'
+                sh "echo $DOCKERHUB_PSW | docker login -u $DOCKERHUB_USR --password-stdin"
+            }
+        }
         stage('Code') {
             steps {
                 echo 'Checking out code...'
