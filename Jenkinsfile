@@ -48,11 +48,8 @@ stage('Push image') {
         sh "docker push ${FULL_IMAGE}"
         // Capture the digest after push for signing
         script {
-            env.IMAGE_DIGEST = sh(
-                script: "docker inspect --format='{{index .RepoDigests 0}}' ${FULL_IMAGE}",
-                returnStdout: true
-            ).trim()
-        }
+        env.IMAGE_DIGEST = "${FULL_IMAGE}"
+    }
         echo "Pushed with digest: ${env.IMAGE_DIGEST}"
     }
 }

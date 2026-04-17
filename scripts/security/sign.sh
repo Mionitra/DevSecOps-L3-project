@@ -10,21 +10,6 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 COSIGN_DIR="${PROJECT_ROOT}/DevSecOps-tools/cosign"
 COMPOSE_FILE="${PROJECT_ROOT}/DevSecOps-tools/docker-compose.yml"
 
-# --- Validate inputs ---
-if [ -z "${IMAGE_DIGEST:-}" ]; then
-  echo "❌ IMAGE_DIGEST is not set"
-  exit 1
-fi
-
-if [ -z "${COSIGN_PASSWORD:-}" ]; then
-  echo "❌ COSIGN_PASSWORD is not set"
-  exit 1
-fi
-
-if [ ! -f "${COSIGN_DIR}/cosign.key" ]; then
-  echo "❌ cosign.key not found at ${COSIGN_DIR}/cosign.key"
-  exit 1
-fi
 
 # --- Build target (digest format required) ---
 SIGN_TARGET="${IMAGE_DIGEST}"
