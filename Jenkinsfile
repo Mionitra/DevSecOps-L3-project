@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME   = "devops-app"
         IMAGE_TAG    = "${env.BUILD_NUMBER}"
-        REGISTRY     = "docker.io/Mionitra"
+        REGISTRY     = "docker.io/mionitra"
         FULL_IMAGE   = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
         DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
         DOCKERHUB    = credentials('dockerhub-credentials')
