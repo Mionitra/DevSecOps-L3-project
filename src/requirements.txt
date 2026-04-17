@@ -21,7 +21,7 @@ cookiecutter==2.6.0
 cryptography==46.0.4
 daphne==4.2.1
 distlib==0.4.0
-Django==6.0.2
+Django>=5.2,<6.0
 django-tailwind==4.4.2
 fastapi==0.135.3
 fontawesomefree==6.6.0
