@@ -37,11 +37,12 @@ docker compose -f "$COMPOSE_FILE" run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v "${REPORTS_DIR}:/app/security-reports" \
   -e TRIVY_DB_REPOSITORY=aquasec/trivy-db \
-  trivy image \
-  --skip-db-update \
-  --format json \
-  --output /app/security-reports/build/trivy.json \
-  "${DOCKER_IMAGE}" || true
+  trivy sh -c "mkdir -p /app/security-reports/build && \
+    trivy image \
+    --skip-db-update \
+    --format json \
+    --output /app/security-reports/build/trivy.json \
+    ${DOCKER_IMAGE}" || true
 
 echo "✅ Trivy done"
 
@@ -52,10 +53,10 @@ echo "▶ Running pip-audit..."
 docker compose -f "$COMPOSE_FILE" run --rm \
   -v "${SRC_DIR}:/app/src" \
   -v "${REPORTS_DIR}:/app/security-reports" \
-  pip-audit \
-  -r /app/src/requirements.txt \
-  -f json \
-  -o /app/security-reports/build/pip-audit.json || true
+  pip-audit sh -c "test -f /app/src/requirements.txt && \
+    pip-audit -r /app/src/requirements.txt \
+    -f json \
+    -o /app/security-reports/build/pip-audit.json"
 
 echo "✅ pip-audit done"
 

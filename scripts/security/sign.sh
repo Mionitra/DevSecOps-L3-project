@@ -25,7 +25,7 @@ echo "Raw digest: ${IMAGE_DIGEST}"
 # --- Sign image ---
 docker compose -f "${COMPOSE_FILE}" run --rm \
   -e COSIGN_PASSWORD="${COSIGN_PASSWORD}" \
-  -v "${COSIGN_DIR}/cosign.key:/app/cosign.key"\
+  -v "${COSIGN_DIR}/cosign.key:/app/cosign.key" \
   -v "$HOME/.docker:/root/.docker" \
   cosign sign \
   --key /app/cosign.key \
