@@ -22,6 +22,11 @@ echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin
 
 echo "Raw digest: ${IMAGE_DIGEST}"
 
+if [ ! -f "${COSIGN_DIR}/cosign.key" ]; then
+  echo "❌ cosign.key not found at ${COSIGN_DIR}"
+  exit 1
+fi
+
 # --- Sign image ---
 docker compose -f "${COMPOSE_FILE}" run --rm \
   -e COSIGN_PASSWORD="${COSIGN_PASSWORD}" \
