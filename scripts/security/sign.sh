@@ -24,9 +24,10 @@ test -f "${COSIGN_DIR}/cosign.key" || { echo "❌ Missing cosign.key at ${COSIGN
 
 docker compose -f "${COMPOSE_FILE}" run --rm \
   -e COSIGN_PASSWORD="${COSIGN_PASSWORD}" \
+  -v "${COSIGN_DIR}/cosign.key:/app/cosign.key:ro" \
   -v "$HOME/.docker:/root/.docker" \
   cosign sign \
-  --key /app/cosign/cosign.key \
+  --key /app/cosign.key \
   "${SIGN_TARGET}"
 
 echo "✅ Image signed successfully."
