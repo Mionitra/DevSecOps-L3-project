@@ -5,6 +5,8 @@ RUN apk add --no-cache curl \
      -o /usr/local/bin/cosign \
   && chmod +x /usr/local/bin/cosign
 
+RUN touch /app/cosign.key
+
 WORKDIR /app
 
 ENTRYPOINT [""]
