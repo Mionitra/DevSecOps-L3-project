@@ -19,6 +19,12 @@ echo "📦 Signing: ${SIGN_TARGET}"
 
 # Login to Docker Hub
 echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin
+cp "${COSIGN_DIR}/cosign.key" ./cosign.key
+
+docker run --rm \
+  -v "$(pwd)/cosign.key:/app/cosign.key:ro" \
+  alpine \
+  sh -c "test -f /app/cosign.key && echo OK"
 
 COSIGN_KEY_PATH="$(realpath ${COSIGN_DIR}/cosign.key)"
 
