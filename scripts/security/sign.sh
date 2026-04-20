@@ -20,8 +20,9 @@ test -f "${COSIGN_DIR}/cosign.key" || { echo "❌ Missing cosign.key at ${COSIGN
 
 docker compose -f "${COMPOSE_FILE}" run --rm \
   -e COSIGN_PASSWORD="${COSIGN_PASSWORD}" \
+  -e REGISTRY_USERNAME="${DOCKERHUB_USR}" \
+  -e REGISTRY_PASSWORD="${DOCKERHUB_PSW}" \
   -v jenkins_home_jenkins_home:/jenkins_home:ro \
-  -v "${HOME}/.docker/config.json:/root/.docker/config.json:ro" \
   cosign \
   sign \
   --key /jenkins_home/workspace/devsecops-project-pipeline/DevSecOps-tools/cosign/cosign.key \
