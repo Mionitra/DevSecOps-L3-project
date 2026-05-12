@@ -83,7 +83,16 @@ stage('Déploiement') {
             echo 'Verifying signature before deployment...'
             sh 'chmod +x scripts/security/verify.sh'
             sh './scripts/security/verify.sh'
-            echo 'Deploying application...'
+
+            echo 'Deploying application via Docker...'
+            // Stop and remove existing container if it exists
+            sh "docker ps -q --filter 'name=devops-app-container' | xargs -r docker stop"
+            sh "docker ps -aq --filter 'name=devops-app-container' | xargs -r docker rm"
+
+            // Run the new container mapping port 8000
+            sh "docker run -d --name devops-app-container -p 8000:8000 ${DOCKER_IMAGE}"
+
+            echo 'Application deployed and accessible at http://localhost:8000'
         }
     }
 }
