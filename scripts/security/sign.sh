@@ -7,7 +7,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 COMPOSE_FILE="${PROJECT_ROOT}/DevSecOps-tools/docker-compose.yml"
-KEY_PATH="/jenkins_home/workspace/devsecops-project-pipeline/DevSecOps-tools/cosign/cosign.key"
+# KEY_PATH is now provided via COSIGN_KEY_FILE environment variable from Jenkins
+# and will be mounted into the container at /tmp/cosign.key
 
 SIGN_TARGET="${SIGN_TARGET}"
 
@@ -21,12 +22,12 @@ DOCKER_AUTH=$(cat /root/.docker/config.json | python3 -c "import sys,json; print
 
 docker compose -f "${COMPOSE_FILE}" run --rm \
   -e COSIGN_PASSWORD="${COSIGN_PASSWORD}" \
-  -v jenkins_home_jenkins_home:/jenkins_home:ro \
+  -v "${COSIGN_KEY_FILE}:/tmp/cosign.key:ro" \
   --entrypoint sh \
   cosign -c "
     mkdir -p /root/.docker &&
     printf '{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"%s\"}}}' '${DOCKER_AUTH}' > /root/.docker/config.json &&
-    cosign sign --key ${KEY_PATH} ${SIGN_TARGET}
+    cosign sign --key /tmp/cosign.key ${SIGN_TARGET}
   "
 
 echo "✅ Image signed successfully."

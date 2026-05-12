@@ -64,10 +64,13 @@ echo "Using digest with the env sign_target: ${env.SIGN_TARGET}"
     }
 }
 
-stage('Signature') {
+        stage('Signature') {
     steps {
         echo 'Signing image...'
-        withCredentials([string(credentialsId: 'cosign-password-id', variable: 'COSIGN_PASSWORD')]) {
+        withCredentials([
+            string(credentialsId: 'cosign-private-password', variable: 'COSIGN_PASSWORD'),
+            file(credentialsId: 'cosign-private-key', variable: 'COSIGN_KEY_FILE')
+        ]) {
             sh 'chmod +x scripts/security/sign.sh'
             sh './scripts/security/sign.sh'
         }

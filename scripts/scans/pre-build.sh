@@ -9,7 +9,7 @@ REPORTS_DIR="${TOOLS_DIR}/security-reports"
 
 mkdir -p "${REPORTS_DIR}/pre-build"
 
-echo "🔐 Running PRE-BUILD security scans..."
+echo "Running PRE-BUILD security scans..."
 
 # Bandit
 echo "▶ Running Bandit..."
