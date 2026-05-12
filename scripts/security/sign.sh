@@ -7,26 +7,33 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 COMPOSE_FILE="${PROJECT_ROOT}/DevSecOps-tools/docker-compose.yml"
-# KEY_PATH is now provided via COSIGN_KEY_FILE environment variable from Jenkins
-# and will be mounted into the container at /tmp/cosign.key
 
 SIGN_TARGET="${SIGN_TARGET}"
 
 echo "📦 Signing: ${SIGN_TARGET}"
 
-# Login to Docker Hub (updates /root/.docker/config.json inside Jenkins)
+# Login to Docker Hub
 echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin
 
-# Extract the auth token Jenkins just saved
-DOCKER_AUTH=$(cat /root/.docker/config.json | python3 -c "import sys,json; print(json.load(sys.stdin)['auths']['https://index.docker.io/v1/']['auth'])")
+# Extract auth token
+DOCKER_AUTH=$(python3 -c "
+import sys, json
+cfg = json.load(open('/root/.docker/config.json'))
+print(cfg['auths']['https://index.docker.io/v1/']['auth'])
+")
+
+# Read the key content from the file Jenkins provided
+COSIGN_KEY_CONTENT=$(cat "${COSIGN_KEY_FILE}")
 
 docker compose -f "${COMPOSE_FILE}" run --rm \
   -e COSIGN_PASSWORD="${COSIGN_PASSWORD}" \
-  -v "${COSIGN_KEY_FILE}:/tmp/cosign.key:ro" \
+  -e COSIGN_KEY_CONTENT="${COSIGN_KEY_CONTENT}" \
   --entrypoint sh \
   cosign -c "
     mkdir -p /root/.docker &&
     printf '{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"%s\"}}}' '${DOCKER_AUTH}' > /root/.docker/config.json &&
+    printf '%s' \"\${COSIGN_KEY_CONTENT}\" > /tmp/cosign.key &&
+    chmod 600 /tmp/cosign.key &&
     cosign sign --key /tmp/cosign.key ${SIGN_TARGET}
   "
 
