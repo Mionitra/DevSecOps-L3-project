@@ -101,6 +101,9 @@ stage('Déploiement') {
     post {
         always {
             echo 'Pipeline finished.'
+            archiveArtifacts artifacts: 'DevSecOps-tools/security-reports/**/*.json',
+                            allowEmptyArchive: true,
+                            fingerprint: true
         }
         success {
             echo 'Build successful!'
