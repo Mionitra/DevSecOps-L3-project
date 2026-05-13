@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-# Before (wrong — picks up DevSecOps-tools/ as root)
-PROJECT_DIR=$(pwd)
-
-# After (correct — always resolves to repo root regardless of where script is called from)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
@@ -12,6 +8,16 @@ COMPOSE_FILE="${PROJECT_DIR}/DevSecOps-tools/docker-compose.yml"
 TOOLS_DIR="${PROJECT_DIR}/DevSecOps-tools"
 SRC_DIR="${PROJECT_DIR}/src"
 REPORTS_DIR="${TOOLS_DIR}/security-reports"
+
+# ── DEBUG — remove once confirmed working ──────────────────────────────────
+echo "=== PATH DEBUG ==="
+echo "SCRIPT_DIR : ${SCRIPT_DIR}"
+echo "PROJECT_DIR: ${PROJECT_DIR}"
+echo "SRC_DIR    : ${SRC_DIR}"
+echo "SRC contents:"
+ls -la "${SRC_DIR}" || echo "❌ SRC_DIR does not exist or is empty"
+echo "=================="
+# ───────────────────────────────────────────────────────────────────────────
 
 mkdir -p "${REPORTS_DIR}/pre-build"
 
