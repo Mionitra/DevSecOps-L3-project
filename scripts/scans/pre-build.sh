@@ -29,7 +29,7 @@ docker compose -f "$COMPOSE_FILE" run --rm \
   -v "${REPORTS_DIR}/pre-build:/scan/reports" \
   semgrep \
   scan --config auto --json \
-  --no-git \
+  --no-git-ignore \
   --output /scan/reports/semgrep.json \
   /scan/src || true
 echo "✅ Semgrep done"
