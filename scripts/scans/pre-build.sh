@@ -1,7 +1,13 @@
 #!/bin/bash
 set -e
 
+# Before (wrong — picks up DevSecOps-tools/ as root)
 PROJECT_DIR=$(pwd)
+
+# After (correct — always resolves to repo root regardless of where script is called from)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+
 COMPOSE_FILE="${PROJECT_DIR}/DevSecOps-tools/docker-compose.yml"
 TOOLS_DIR="${PROJECT_DIR}/DevSecOps-tools"
 SRC_DIR="${PROJECT_DIR}/src"
