@@ -9,15 +9,19 @@ TOOLS_DIR="${PROJECT_DIR}/DevSecOps-tools"
 SRC_DIR="${PROJECT_DIR}/src"
 REPORTS_DIR="${TOOLS_DIR}/security-reports"
 
-# ── DEBUG — remove once confirmed working ──────────────────────────────────
-echo "=== PATH DEBUG ==="
-echo "SCRIPT_DIR : ${SCRIPT_DIR}"
-echo "PROJECT_DIR: ${PROJECT_DIR}"
-echo "SRC_DIR    : ${SRC_DIR}"
-echo "SRC contents:"
-ls -la "${SRC_DIR}" || echo "❌ SRC_DIR does not exist or is empty"
-echo "=================="
-# ───────────────────────────────────────────────────────────────────────────
+# ── Resolve the real host path if running inside a Jenkins container ────────
+# Jenkins mounts its workspace from the host; we need the HOST path for
+# Docker volume mounts, not the path inside the Jenkins container.
+# WORKSPACE_HOST_PATH must be set in the Jenkins pipeline environment.
+if [ -n "${WORKSPACE_HOST_PATH:-}" ]; then
+  HOST_PROJECT_DIR="${WORKSPACE_HOST_PATH}"
+else
+  HOST_PROJECT_DIR="${PROJECT_DIR}"
+fi
+
+HOST_SRC_DIR="${HOST_PROJECT_DIR}/src"
+HOST_REPORTS_DIR="${HOST_PROJECT_DIR}/DevSecOps-tools/security-reports"
+# ────────────────────────────────────────────────────────────────────────────
 
 mkdir -p "${REPORTS_DIR}/pre-build"
 
@@ -26,8 +30,8 @@ echo "Running PRE-BUILD security scans..."
 # Bandit
 echo "▶ Running Bandit..."
 docker compose -f "$COMPOSE_FILE" run --rm \
-  -v "${SRC_DIR}:/scan/src:ro" \
-  -v "${REPORTS_DIR}/pre-build:/scan/reports" \
+  -v "${HOST_SRC_DIR}:/scan/src:ro" \
+  -v "${HOST_REPORTS_DIR}/pre-build:/scan/reports" \
   bandit \
   -r /scan/src \
   -f json \
@@ -37,8 +41,8 @@ echo "✅ Bandit done"
 # Semgrep
 echo "▶ Running Semgrep..."
 docker compose -f "$COMPOSE_FILE" run --rm \
-  -v "${SRC_DIR}:/scan/src:ro" \
-  -v "${REPORTS_DIR}/pre-build:/scan/reports" \
+  -v "${HOST_SRC_DIR}:/scan/src:ro" \
+  -v "${HOST_REPORTS_DIR}/pre-build:/scan/reports" \
   semgrep \
   scan --config auto --json \
   --no-git-ignore \
@@ -49,8 +53,8 @@ echo "✅ Semgrep done"
 # Gitleaks
 echo "▶ Running Gitleaks..."
 docker compose -f "$COMPOSE_FILE" run --rm \
-  -v "${PROJECT_DIR}:/scan/src:ro" \
-  -v "${REPORTS_DIR}/pre-build:/scan/reports" \
+  -v "${HOST_PROJECT_DIR}:/scan/src:ro" \
+  -v "${HOST_REPORTS_DIR}/pre-build:/scan/reports" \
   gitleaks \
   detect \
   --source /scan/src \
