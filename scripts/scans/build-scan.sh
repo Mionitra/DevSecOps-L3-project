@@ -41,10 +41,14 @@ echo "▶ Running pip-audit..."
 docker compose -f "$COMPOSE_FILE" run --rm \
   -v "${SRC_DIR}:/scan/src:ro" \
   -v "${REPORTS_DIR}/build:/scan/reports" \
-  pip-audit \
-  -r /scan/src/requirements.txt \
-  -f json \
-  -o /scan/reports/pip-audit.json || true
+  --entrypoint sh \
+  pip-audit -c "
+    pip install -q -r /scan/src/requirements.txt 2>/dev/null || true &&
+    pip-audit \
+      --skip-editable \
+      --format json \
+      --output /scan/reports/pip-audit.json
+  " || true
 echo "✅ pip-audit done"
 
 echo "✅ BUILD scans complete."
