@@ -19,7 +19,6 @@ echo "${DOCKERHUB_PSW}" | docker login -u "${DOCKERHUB_USR}" --password-stdin
 echo "▶ Updating Trivy DB if needed..."
 docker compose -f "$COMPOSE_FILE" run --rm \
   -v trivy-cache:/root/.cache/trivy \
-  -e TRIVY_DB_REPOSITORY=aquasec/trivy-db \
   trivy-db-updater || true
 
 # Trivy scan
@@ -28,7 +27,6 @@ docker compose -f "$COMPOSE_FILE" run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v trivy-cache:/root/.cache/trivy \
   -v "${REPORTS_DIR}/build:/scan/reports" \
-  -e TRIVY_DB_REPOSITORY=aquasec/trivy-db \
   trivy image \
   --skip-db-update \
   --format json \

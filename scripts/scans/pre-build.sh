@@ -6,7 +6,6 @@ PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 COMPOSE_FILE="${PROJECT_DIR}/DevSecOps-tools/docker-compose.yml"
 TOOLS_DIR="${PROJECT_DIR}/DevSecOps-tools"
-SRC_DIR="${PROJECT_DIR}/src"
 REPORTS_DIR="${TOOLS_DIR}/security-reports"
 
 # ── Resolve the real host path if running inside a Jenkins container ────────

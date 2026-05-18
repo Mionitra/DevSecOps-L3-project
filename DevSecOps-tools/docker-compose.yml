@@ -18,7 +18,7 @@ services:
     build: ./trivy
     command: image --download-db-only
     environment:
-      - TRIVY_DB_REPOSITORY=mionitra/trivy-db
+      - TRIVY_DB_REPOSITORY=aquasec/trivy-db
 
   pip-audit:
     build: ./pip-audit
