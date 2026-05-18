@@ -8,10 +8,6 @@ pipeline {
         FULL_IMAGE   = "${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
         DOCKER_IMAGE = "${IMAGE_NAME}:${IMAGE_TAG}"
         DOCKERHUB    = credentials('dockerhub-credentials')
-        WORKSPACE_HOST_PATH = sh(
-        script: 'echo "$WORKSPACE" | sed "s|/var/jenkins_home|/mnt/d/Devops/jenkins_home|g"',
-            returnStdout: true
-        ).trim()
     }
 
     stages {
